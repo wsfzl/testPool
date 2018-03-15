@@ -1,0 +1,3 @@
+org\shiro\controller\sysPermissionController.class
+org\shiro\controller\SysUserController.class
+org\shiro\controller\SysRoleController.class

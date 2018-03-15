@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.shiro.dao.SysRoleDao">
+	<select id="getAll" resultType="org.shiro.pojo.SysRole">
+		select * from sys_role
+	</select>
+	
+<sql id="conditionSql">
+		<!-- 构建查询条件 -->
+		<if test="condition != null">
+			<trim prefix="where" prefixOverrides="and | or">
+				<!-- 是否传递了用户名条件 -->
+				<if test="condition.name != null and condition.name != ''">
+					and name like concat('%',#{condition.name},'%')
+				</if>
+	<!--	 	<if test="condition.county != null and condition.county.countyId != null and condition.county.countyId!= -1">
+					and countyId = #{condition.county.countyId}
+			</if>	-->
+			</trim>
+		</if>
+	</sql>
+	
+	<select id="getListByCondition" resultType="sysRole">
+		select * from sys_role
+			<include refid="conditionSql"></include>
+			<!-- 添加排序:如果没有传递，默认按照主键降序排，否则按照传递的排列 -->
+			<choose>
+				<when test="column == null">order by id desc</when>
+				<otherwise>order by ${column} ${orderBy}</otherwise>
+			</choose>
+			limit #{start},#{limit}
+	</select>
+	
+	<select id="getCountByCondition" parameterType="SysRole" resultType="int">
+		select count(1) from sys_role
+		<include refid="conditionSql"></include>
+	</select>
+	<insert id="add" parameterType="sysRole">
+		INSERT INTO sys_role(NAME,available) VALUES(#{name},#{available})
+	</insert>
+	<delete parameterType="java.lang.reflect.Array" id="deleteByIds">
+	delete from sys_role where id in 
+	<foreach separator="," item="item" collection="array" close=")" open="("> #{item} </foreach>
+
+	</delete>
+	
+	<select id="getById" parameterType="int" resultType="sysRole">
+		select * from sys_role where id = #{id}
+	</select>
+	
+	<update id="update" parameterType="sysRole">
+		UPDATE sys_role SET NAME = #{name},available = #{available}
+			WHERE id = #{id}
+	</update>
+	
+</mapper>
